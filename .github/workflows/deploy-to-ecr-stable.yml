@@ -52,6 +52,6 @@ jobs:
 
     - name: Deploy to EKS
       run: |
-        kubectl create namespace eks-sample-app 
+        kubectl create namespace eks-example-app 
         kubectl apply -f ${{ github.workspace }}/deployments/deploy_to_stable_cluster.yaml
         kubectl apply -f ${{ github.workspace }}/services/eks_service.yaml

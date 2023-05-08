@@ -51,6 +51,6 @@ jobs:
 
     - name: Deploy to EKS #can remove create namespace after initial run
       run: |
-        kubectl create namespace eks-sample-app 
+        kubectl create namespace eks-example-app 
         kubectl apply -f ${{ github.workspace }}/deployments/deploy_to_edge_cluster.yaml
         kubectl apply -f ${{ github.workspace }}/services/eks_service.yaml
