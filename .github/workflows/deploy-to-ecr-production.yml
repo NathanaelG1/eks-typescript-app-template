@@ -51,5 +51,5 @@ jobs:
 
     - name: Deploy to EKS
       run: |
-        kubectl apply -f /deployments/deploy-to-production-cluster.yaml
-        kubectl apply -f /services/eks_service.yaml
+        kubectl apply -f deployments/deploy-to-production-cluster.yaml
+        kubectl apply -f services/eks_service.yaml
