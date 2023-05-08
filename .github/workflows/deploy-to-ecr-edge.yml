@@ -9,7 +9,7 @@ on:
 jobs:
 
   
-  build:
+  build-and-push:
     
     name: Build Image
     runs-on: ubuntu-latest
@@ -40,3 +40,34 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  
+  deploy-edge:
+    
+    name: Deploy to EKS
+    runs-on: amazon/aws-cli
+    environment: edge
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Get KubeConfig
+      run: |
+        aws eks update-kubeconfig --region us-east-1 --name eks-example-app-edge
+        kubectl get svc
+
+    - name: Deploy to EKS
+      run: |
+        kubectl apply -f ./deployments/deploy-to-edge-cluster.yaml
+        kubectl apply -f ./services/eks_service_edge.yaml
+
+    - name: Get Service URL
+      run: |
+        kubectl get svc
