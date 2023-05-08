@@ -8,8 +8,7 @@ on:
 
 jobs:
 
-  
-  build:
+  test:
     
     name: Build Image
     runs-on: ubuntu-latest
@@ -20,6 +19,11 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v2
     
-    - name: Build container image and run tests
+    - name: Run application tests
       run: |
-        docker build -t typescript_eks_app .
+        npm install
+        npm run test
+    
+    - name: Build container image and run tests from inside of image
+      run: |
+        docker build -t typescript_eks_app --target test .
