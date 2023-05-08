@@ -27,7 +27,7 @@ spec:
                 - arm64
       containers:
       - name: eks-example-typescript-app
-        image: 550604753153.dkr.ecr.us-east-1.amazonaws.com/eks-example-app-edge
+        image: 550604753153.dkr.ecr.us-east-1.amazonaws.com/eks-example-app-production
         ports:
         - name: http
           containerPort: 3000
