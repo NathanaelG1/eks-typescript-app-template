@@ -23,6 +23,7 @@ jobs:
       run: |
         npm install
         npm run test
+        
     
     - name: Build container image and run tests from inside of image
       run: |
