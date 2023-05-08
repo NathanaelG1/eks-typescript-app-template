@@ -23,5 +23,3 @@ jobs:
     - name: Build container image and run tests
       run: |
         docker build -t typescript_eks_app .
-        docker run -it --rm -p 3000:3000 -d typescript_eks_app
-
