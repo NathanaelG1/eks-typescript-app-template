@@ -49,8 +49,7 @@ jobs:
         aws eks update-kubeconfig --region us-east-1 --name edge-xyz-eks
         kubectl get svc
 
-    - name: Deploy to EKS #can remove create namespace after initial run
+    - name: Deploy to EKS #if running the first time add this line: kubectl create namespace eks-example-app
       run: |
-        kubectl create namespace eks-example-app 
         kubectl apply -f ${{ github.workspace }}/deployments/deploy_to_edge_cluster.yaml
         kubectl apply -f ${{ github.workspace }}/services/eks_service.yaml
