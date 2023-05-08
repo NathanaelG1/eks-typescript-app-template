@@ -30,7 +30,7 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
-        
+
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
@@ -51,5 +51,5 @@ jobs:
 
     - name: Deploy to EKS
       run: |
-        kubectl apply -f ./deployments/deploy-to-edge-cluster.yaml
-        kubectl apply -f ./services/eks_service.yaml
+        kubectl apply -f /deployments/deploy-to-edge-cluster.yaml
+        kubectl apply -f /services/eks_service.yaml
