@@ -1,0 +1,27 @@
+name: test
+
+on:
+ 
+  push:
+    branches:
+      - '*'
+
+jobs:
+
+  
+  build:
+    
+    name: Build Image
+    runs-on: ubuntu-latest
+
+   
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v2
+    
+    - name: Build container image and run tests
+      run: |
+        docker build -t typescript_eks_app .
+        docker run -rm -p 3000:3000 -d typescript_eks_app
+
