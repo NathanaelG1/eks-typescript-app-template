@@ -28,3 +28,8 @@ this will trigger the pipeline to push the image to ECR and deploy to the EKS cl
 
 Once deployed and you have your endpoint, adjust the postman_collection.json to include your URL
 to enable integration tests.
+
+# Stop service on EKS
+Run the optional workflow stop-service, provide an environment (edge, stable, production) and
+this will stop the service on the EKS cluster. To remove the ECR resources, run the destroy
+workflow from https://github.com/NathanaelG1/eks_cluster_template

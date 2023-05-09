@@ -1,0 +1,46 @@
+name: Stop service
+
+on:
+  workflow_dispatch:
+    inputs:
+      cluster:
+        description: 'Choose cluster environment (edge, stable, production)'
+        required: true
+        default: 'edge'
+
+jobs:
+
+  stop-service:
+    
+    name: stop service
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.cluster }}
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v2.0
+      with:
+        version: 'v1.23.6'
+      id: install
+      
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Get KubeConfig
+      run: |
+        aws eks update-kubeconfig --region us-east-1 --name ${{ github.event.inputs.cluster }}-xyz-eks
+        kubectl get svc
+
+    - name: Stop on EKS 
+      run: |
+        kubectl stop -f ${{ github.workspace }}/services/eks_service.yaml
+        echo "Confirming service stopped on EKS.."
+        kubectl get pods --all-namespaces
+
