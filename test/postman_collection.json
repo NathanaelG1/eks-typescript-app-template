@@ -8,9 +8,46 @@
 	"item": [
 		{
 			"name": "test normal request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							"pm.test(\"Status code name has string\", function () {",
+							"    pm.response.to.have.status(\"OK\");",
+							"});",
+							"var schema = {",
+							"    \"items\": {",
+							"        \"type\": \"boolean\"",
+							"    }",
+							"};",
+							"pm.test(\"JSON contains message and timestamp\", function () {",
+							"    pm.response.to.have.jsonBody({",
+							"            message: \"Automate all the things!\",",
+							"            timestamp: pm.expect(Number)",
+							"        })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"url": {
+					"raw": "af8a8c7ea8f184a9b828387b5e5dec4f-929168989.us-east-1.elb.amazonaws.com",
+					"host": [
+						"af8a8c7ea8f184a9b828387b5e5dec4f-929168989",
+						"us-east-1",
+						"elb",
+						"amazonaws",
+						"com"
+					]
+				}
 			},
 			"response": []
 		},

@@ -8,6 +8,28 @@ on:
 
 jobs:
 
+  test-stable: 
+    name: Test application pre-build and post-build
+    runs-on: ubuntu-latest
+    environment: edge
+
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v2
+    
+    - name: Run application tests
+      run: |
+        npm install
+        npm run test
+
+    
+    - name: Build container image and run tests from inside of image
+      run: |
+        docker build -t typescript_eks_app --target test .
+
+
+
   deploy-production:
     
     name: Deploy to EKS
@@ -54,3 +76,16 @@ jobs:
         kubectl create namespace eks-example-app 
         kubectl apply -f ${{ github.workspace }}/deployments/deploy_to_production_cluster.yaml
         kubectl apply -f ${{ github.workspace }}/services/eks_service.yaml
+    
+  integration-test-production:
+
+    name: Test EKS app
+    environment: edge
+    runs-on: ubuntu-latest
+    needs: deploy-production
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: matt-ball/newman-action@master
+        with:
+          collection: ${{ github.workspace }}/test/postman_collection.json
