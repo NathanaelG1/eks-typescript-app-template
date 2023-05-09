@@ -1,0 +1,92 @@
+{
+	"info": {
+		"_postman_id": "1b2d5767-ec7b-47cc-99bb-d4677b11dd74",
+		"name": "kubernetes_template_tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7614268"
+	},
+	"item": [
+		{
+			"name": "test normal request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							"pm.test(\"Status code name has string\", function () {",
+							"    pm.response.to.have.status(\"OK\");",
+							"});",
+							"var schema = {",
+							"    \"items\": {",
+							"        \"type\": \"boolean\"",
+							"    }",
+							"};",
+							"pm.test(\"JSON contains message and timestamp\", function () {",
+							"    pm.response.to.have.jsonBody({",
+							"            message: \"Automate all the things!\",",
+							"            timestamp: pm.expect(Number)",
+							"        })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "af8a8c7ea8f184a9b828387b5e5dec4f-929168989.us-east-1.elb.amazonaws.com",
+					"host": [
+						"af8a8c7ea8f184a9b828387b5e5dec4f-929168989",
+						"us-east-1",
+						"elb",
+						"amazonaws",
+						"com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bad request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(404);",
+							"});",
+							"pm.test(\"Status code name has string\", function () {",
+							"    pm.response.to.have.status(\"Not Found\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "af8a8c7ea8f184a9b828387b5e5dec4f-929168989.us-east-1.elb.amazonaws.com/badPath",
+					"host": [
+						"af8a8c7ea8f184a9b828387b5e5dec4f-929168989",
+						"us-east-1",
+						"elb",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"badPath"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

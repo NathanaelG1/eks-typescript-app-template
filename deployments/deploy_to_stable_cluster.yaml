@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eks-example-typescript-app
+  namespace: eks-example-app
+  labels:
+    app: eks-example-typescript-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: eks-example-typescript-app
+  template:
+    metadata:
+      labels:
+        app: eks-example-typescript-app
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - arm64
+      containers:
+      - name: eks-example-typescript-app
+        image: 550604753153.dkr.ecr.us-east-1.amazonaws.com/eks-example-app-stable
+        ports:
+        - name: http
+          containerPort: 3000
+        imagePullPolicy: Always
+      nodeSelector:
+        kubernetes.io/os: linux

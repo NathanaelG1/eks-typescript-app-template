@@ -1,0 +1,88 @@
+name: Deploy to ECR
+
+on:
+ 
+  push:
+    branches:
+      - edge
+
+jobs:
+
+  test-edge: 
+    name: Test application pre-build and post-build
+    runs-on: ubuntu-latest
+    environment: edge
+
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v2
+    
+    - name: Run application tests
+      run: |
+        npm install
+        npm run test
+
+    
+    - name: Build container image and run tests from inside of image
+      run: |
+        docker build -t typescript_eks_app --target test .
+
+  deploy-edge:
+    
+    name: Deploy to EKS
+    runs-on: ubuntu-latest
+    environment: edge
+    needs: test-edge
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v2.0
+      with:
+        version: 'v1.23.6'
+      id: install
+      
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: eks-example-app-edge
+        IMAGE_TAG: latest
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Get KubeConfig
+      run: |
+        aws eks update-kubeconfig --region us-east-1 --name edge-xyz-eks
+        kubectl get svc
+
+    - name: Deploy to EKS #if running the first time add this line to the top, then remove after the namespace has been created: kubectl create namespace eks-example-app
+      run: |
+        kubectl apply -f ${{ github.workspace }}/deployments/deploy_to_edge_cluster.yaml
+        kubectl apply -f ${{ github.workspace }}/services/eks_service.yaml
+    
+  integration-test-edge:
+    name: Test EKS app
+    environment: edge
+    runs-on: ubuntu-latest
+    needs: deploy-edge
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: matt-ball/newman-action@master
+        with:
+          collection: ${{ github.workspace }}/test/postman_collection.json
