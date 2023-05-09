@@ -8,6 +8,26 @@ on:
 
 jobs:
 
+  test-edge: 
+    name: Test application pre-build and post-build
+    runs-on: ubuntu-latest
+    environment: edge
+
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v2
+    
+    - name: Run application tests
+      run: |
+        npm install
+        npm run test
+
+    
+    - name: Build container image and run tests from inside of image
+      run: |
+        docker build -t typescript_eks_app --target test .
+
   deploy-edge:
     
     name: Deploy to EKS
@@ -49,7 +69,18 @@ jobs:
         aws eks update-kubeconfig --region us-east-1 --name edge-xyz-eks
         kubectl get svc
 
-    - name: Deploy to EKS #if running the first time add this line: kubectl create namespace eks-example-app
+    - name: Deploy to EKS #if running the first time add this line to the top, then remove after the namespace has been created: kubectl create namespace eks-example-app
       run: |
         kubectl apply -f ${{ github.workspace }}/deployments/deploy_to_edge_cluster.yaml
         kubectl apply -f ${{ github.workspace }}/services/eks_service.yaml
+    
+  integration-test-edge:
+    name: Test EKS app
+    environment: edge
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: matt-ball/newman-action@master
+        with:
+          collection: ${{ github.workspace }}/test/postman_collection.json
