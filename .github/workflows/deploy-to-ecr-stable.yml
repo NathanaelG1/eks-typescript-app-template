@@ -11,7 +11,7 @@ jobs:
   test-stable: 
     name: Test application pre-build and post-build
     runs-on: ubuntu-latest
-    environment: edge
+    environment: stable
 
     steps:
 
@@ -78,10 +78,10 @@ jobs:
         kubectl apply -f ${{ github.workspace }}/deployments/deploy_to_stable_cluster.yaml
         kubectl apply -f ${{ github.workspace }}/services/eks_service.yaml
 
-  integration-test-edge:
-    
+  integration-test-stable:
+
     name: Test EKS app
-    environment: edge
+    environment: stable
     runs-on: ubuntu-latest
     needs: deploy-stable
 

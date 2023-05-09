@@ -11,7 +11,7 @@ jobs:
   test-stable: 
     name: Test application pre-build and post-build
     runs-on: ubuntu-latest
-    environment: edge
+    environment: production
 
     steps:
 
@@ -80,7 +80,7 @@ jobs:
   integration-test-production:
 
     name: Test EKS app
-    environment: edge
+    environment: production
     runs-on: ubuntu-latest
     needs: deploy-production
 
